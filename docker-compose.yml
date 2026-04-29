@@ -1,0 +1,33 @@
+services:
+  api:
+    # Builds the same image as the dashboard but runs the default uvicorn CMD.
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Keep runtime paths explicit so local and container executions use the same folders.
+      PYTHONPATH: /app/src
+      STOCK_ARIMA_DATA_PATH: /app/data/raw/sample_ohlcv.csv
+      STOCK_ARIMA_MODEL_DIR: /app/models
+      STOCK_ARIMA_REPORT_DIR: /app/reports
+    volumes:
+      # Persist trained artifacts and reports outside the container lifecycle.
+      - ./models:/app/models
+      - ./reports:/app/reports
+
+  dashboard:
+    # Reuses the API image and overrides the command to launch Streamlit.
+    build: .
+    command: streamlit run frontend/app.py --server.address 0.0.0.0 --server.port 8501
+    ports:
+      - "8501:8501"
+    environment:
+      PYTHONPATH: /app/src
+      STOCK_ARIMA_DATA_PATH: /app/data/raw/sample_ohlcv.csv
+      STOCK_ARIMA_MODEL_DIR: /app/models
+      STOCK_ARIMA_REPORT_DIR: /app/reports
+    volumes:
+      - ./models:/app/models
+      - ./reports:/app/reports
+    depends_on:
+      - api

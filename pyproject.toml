@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stock-arima-forecasting"
+version = "0.1.0"
+description = "Deployment-ready ARIMA stock price forecasting and risk dashboard."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.110",
+  "joblib>=1.3",
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "plotly>=5.20",
+  "pydantic>=2.6",
+  "statsmodels>=0.14",
+  "streamlit>=1.32",
+  "uvicorn[standard]>=0.27"
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.27",
+  "pytest>=8.0",
+  "ruff>=0.4"
+]
+
+# The importable package lives under src/ rather than at the repository root.
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+# Tests can import both the src package and top-level app packages without an editable install.
+pythonpath = [".", "src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
